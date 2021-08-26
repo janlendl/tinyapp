@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/janlendl/tinyapp/issues"
   },
-  "homepage": "https://github.com/janlendl/tinyapp#readme"
+  "homepage": "https://github.com/janlendl/tinyapp#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
