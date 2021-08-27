@@ -1,9 +1,11 @@
 const { render } = require('ejs');
 const express = require('express');
+const bodyParser = require('body-parse');
 const app = express();
 const PORT = 3000;
 
 app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({extended: true}));
 
 
 const urlDatabase = {
