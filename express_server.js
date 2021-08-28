@@ -38,6 +38,9 @@ app.post('/urls', (req, res) => {
 
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  if (!urlDatabase[req.params.shortURL]) {
+    return res.send('Error! Please check the shortened URL');
+  }
   res.render('urls_show', templateVars);
 });
 
@@ -48,7 +51,6 @@ app.get('/u/:shortURL', (req, res) => {
   }
   res.redirect(longURL);
 });
-
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
