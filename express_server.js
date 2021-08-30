@@ -38,7 +38,12 @@ app.post('/urls', (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = { 
+    username: req.cookies['username'], 
+    shortURL: req.params.shortURL, 
+    longURL: urlDatabase[req.params.shortURL] 
+  };
+  
   if (!urlDatabase[req.params.shortURL]) {
     return res.send('Error! Please check the shortened URL');
   }
@@ -60,6 +65,13 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 app.post('/urls/:shortURL/update', (req, res) => {
   urlDatabase[req.params.shortURL] = req.body.longURL
+  res.redirect('/urls');
+});
+
+// login route
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  res.cookie('username', username);
   res.redirect('/urls');
 });
 
