@@ -78,7 +78,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
   res.redirect('/urls');
 });
 
-// login route
+// Login and Logout route
 app.post('/login', (req, res) => {
   const username = req.body.username;
   res.cookie('username', username);
