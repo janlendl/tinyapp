@@ -8,19 +8,21 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-        <form class="form-inline" action="/login" method="POST">
-          <div class="form-group mb-2">
-            <!-- <label for="longURL">Enter a URL:</label> -->
-            <input class="form-control" type="text" name="username" placeholder="Username" style="height: 30px; width: 300px; margin: .5em">
-            <button type="submit" class="btn btn-primary">Login</button>
-          </div>
-        </form>
-        <form method="GET" action="/logout">
-          <h5 class="card-text">Logged in as: <%= username %></h5>
-          <button type="submit" class="btn btn-primary">Logout</button>
-        </form>
-        
       </div>
     </div>
+    <% if (!username) { %>
+      <form class="form-inline" action="/login" method="POST">
+        <div class="form-group mb-2">
+          <input class="form-control" type="text" name="username" placeholder="Username" style="height: 30px; width: 300px; margin: .5em">
+          <button type="login" class="btn btn-outline-dark my-2 my-sm-0">Login</button>
+        </div>
+      </form>
+    <%}else {%>
+    <form class="form-inline" action="/logout" method="POST">
+      <div class="form-group mb-2">
+      <span class="navbar-text" style="color:black; padding-right: 10px">Logged in as: <%= username %></h4>
+      <button type="login" class="btn btn-outline-dark my-2 my-sm-0" style="margin: .5em">Logout</button>
+    </form>
+    <%}%>
   </nav>
 </header>
