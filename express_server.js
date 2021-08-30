@@ -7,6 +7,7 @@ const PORT = 3000;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 
 const urlDatabase = {
@@ -23,12 +24,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { 
+    username: req.cookies['username'],
+    urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  const templateVars = { username: req.cookies['username'] };
+  res.render('urls_new', templateVars);
 });
 
 app.post('/urls', (req, res) => {
@@ -43,7 +47,7 @@ app.get('/urls/:shortURL', (req, res) => {
     shortURL: req.params.shortURL, 
     longURL: urlDatabase[req.params.shortURL] 
   };
-  
+
   if (!urlDatabase[req.params.shortURL]) {
     return res.send('Error! Please check the shortened URL');
   }
@@ -72,6 +76,10 @@ app.post('/urls/:shortURL/update', (req, res) => {
 app.post('/login', (req, res) => {
   const username = req.body.username;
   res.cookie('username', username);
+  res.redirect('/urls');
+});
+
+app.get('/logout', (req, res) => {
   res.redirect('/urls');
 });
 
