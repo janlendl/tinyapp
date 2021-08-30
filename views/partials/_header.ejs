@@ -8,6 +8,13 @@
       <div class="navbar-nav">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <form class="form-inline" action="/urls" method="POST">
+          <div class="form-group mb-2">
+            <!-- <label for="longURL">Enter a URL:</label> -->
+            <input class="form-control" type="text" name="username" placeholder="Username" style="height: 30px; width: 300px; margin: .5em">
+            <button type="submit" class="btn btn-primary">Login</button>
+          </div>
+        </form>
       </div>
     </div>
   </nav>
