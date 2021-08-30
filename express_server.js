@@ -10,11 +10,11 @@ app.use(cookieParser());
 
 
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca', 
+  'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://google.com'
 };
 
-function generateRandomString() {
+const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
 
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 // main tinyApp
 app.get('/urls', (req, res) => {
-  const templateVars = { 
+  const templateVars = {
     username: req.cookies['username'],
     urls: urlDatabase };
   res.render('urls_index', templateVars);
@@ -45,10 +45,10 @@ app.post('/urls', (req, res) => {
 
 // shows the url details
 app.get('/urls/:shortURL', (req, res) => {
-  const templateVars = { 
-    username: req.cookies['username'], 
-    shortURL: req.params.shortURL, 
-    longURL: urlDatabase[req.params.shortURL] 
+  const templateVars = {
+    username: req.cookies['username'],
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
   };
 
   if (!urlDatabase[req.params.shortURL]) {
@@ -74,7 +74,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // EDIT longURL feature
 app.post('/urls/:shortURL/update', (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.longURL
+  urlDatabase[req.params.shortURL] = req.body.longURL;
   res.redirect('/urls');
 });
 
