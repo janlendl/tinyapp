@@ -9,17 +9,45 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 
+// Sample Database and User data
 const urlDatabase = {
   'b2xVn2': 'http://www.lighthouselabs.ca',
   '9sm5xK': 'http://google.com'
 };
 
-const generateRandomString = () => {
-  return Math.random().toString(36).substr(2, 6);
+const users = { 
+  "u0001": { 
+    id: "u0001", 
+    email: "jan@hotmail.com", 
+    password: "purple-monkey-dinosaur"
+  }, 
+  "u0002": { 
+    id: "u0002", 
+    email: "lendl@mail.com", 
+    password: "myPasswordisStrong"
+  }
 };
 
+
+// Random variables
+const shortURL = Math.random().toString(36).substr(2, 6);
+const id = 'u' + Math.floor(Math.random() *1000) + 1;
+
+
+// REGISTER route
 app.get('/register', (req, res) => {
   res.render('urls_register');
+});
+
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  users[id] = { id, email, password };
+  console.log(users);
+
+  res.cookie('user_id', id);
+  res.redirect('/urls');
+  console.log(req.cookies['user_id']);
 });
 
 // main tinyApp
@@ -38,7 +66,6 @@ app.get('/urls/new', (req, res) => {
 
 // generates shortURL
 app.post('/urls', (req, res) => {
-  const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`urls/${shortURL}`);
 });
