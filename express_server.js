@@ -18,8 +18,8 @@ const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
 
-app.get('/', (req, res) => {
-  res.send('Hello!');
+app.get('/register', (req, res) => {
+  res.render('urls_register');
 });
 
 // main tinyApp
