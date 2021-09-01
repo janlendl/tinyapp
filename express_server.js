@@ -31,7 +31,6 @@ const users = {
 
 // Random variables
 const shortURL = Math.random().toString(36).substr(2, 6);
-const id = 'u' + Math.floor(Math.random() *1000) + 1;
 
 
 // REGISTER route
@@ -40,20 +39,19 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
+  const id = 'u' + Math.floor(Math.random() *1000) + 1;
   const email = req.body.email;
   const password = req.body.password;
   users[id] = { id, email, password };
-  console.log(users);
 
   res.cookie('user_id', id);
   res.redirect('/urls');
-  console.log(req.cookies['user_id']);
 });
 
 // main tinyApp
 app.get('/urls', (req, res) => {
   const templateVars = {
-    username: req.cookies['username'],
+    user: users[req.cookies['user_id']],
     urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
@@ -73,7 +71,7 @@ app.post('/urls', (req, res) => {
 // shows the url details
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
-    username: req.cookies['username'],
+    user: users.req.cookies['user_id'],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -107,13 +105,13 @@ app.post('/urls/:shortURL/update', (req, res) => {
 
 // Login and Logout route
 app.post('/login', (req, res) => {
-  const username = req.body.username;
-  res.cookie('username', username);
+  const templateVars = { user: users[req.cookies['user_id']] };
+  res.cookie('user_id', id);
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username', req.body.username);
+  res.clearCookie('user_id', req.body.id);
   res.redirect('/urls');
 });
 
