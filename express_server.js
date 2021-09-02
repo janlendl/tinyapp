@@ -67,7 +67,7 @@ app.post('/register', (req, res) => {
   }
   
   const user = emailLookup(email);
-  console.log(user);
+
   if (user) {
     return res.status(400).send('Email already exists');
   }
@@ -141,8 +141,22 @@ app.post('/urls/:shortURL/update', (req, res) => {
 
 // Login and Logout route
 app.post('/login', (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']] };
-  res.cookie('user_id', id);
+  const email = req.body.email;
+  const password = req.body.password;
+  
+  if (!email || !password) {
+    return res.status(403).send('Email or password cannot be blank');
+  }
+  
+  const user = emailLookup(email);
+
+  if (!user) {
+    return res.status(403).send('Account doesn\'t exists');
+  }
+  if (user.password !== password) {
+    return res.status(403).send('Invalid Password!');
+  }
+  res.cookie('user_id', user.id);
   res.redirect('/urls');
 });
 
