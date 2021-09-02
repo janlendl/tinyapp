@@ -90,6 +90,10 @@ app.get('/urls', (req, res) => {
 // create new shortURL
 app.get('/urls/new', (req, res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
+  
+  if (!req.cookies['user_id']) {
+    return res.redirect('/login');
+  }
   res.render('urls_new', templateVars);
 });
 
