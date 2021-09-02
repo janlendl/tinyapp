@@ -45,10 +45,15 @@ const emailLookup = (email) => {
   return null;
 };
 
+app.get('/login', (req, res) => {
+  const templateVars = { user: users[req.cookies['user_id']] };
+  res.render('urls_login', templateVars);
+});
 
 // Route to register page
 app.get('/register', (req, res) => {
-  res.render('urls_register');
+  const templateVars = { user: users[req.cookies['user_id']] };
+  res.render('urls_register', templateVars);
 });
 
 // Register POST
@@ -143,7 +148,7 @@ app.post('/login', (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id', req.body.id);
-  res.redirect('/register');
+  res.redirect('/login');
 });
 
 app.listen(PORT, () => {
