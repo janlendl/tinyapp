@@ -15,15 +15,15 @@ const urlDatabase = {
   '9sm5xK': 'http://google.com'
 };
 
-const users = { 
-  "u0001": { 
-    id: "u0001", 
-    email: "jan@hotmail.com", 
+const users = {
+  "u0001": {
+    id: "u0001",
+    email: "jan@hotmail.com",
     password: "purple-monkey-dinosaur"
-  }, 
-  "u0002": { 
-    id: "u0002", 
-    email: "lendl@mail.com", 
+  },
+  "u0002": {
+    id: "u0002",
+    email: "lendl@mail.com",
     password: "myPasswordisStrong"
   }
 };
@@ -44,16 +44,16 @@ const emailLookup = (email) => {
   }
   return null;
 };
-console.log(users);
 
 
-// REGISTER route
+// Route to register page
 app.get('/register', (req, res) => {
   res.render('urls_register');
 });
 
+// Register POST
 app.post('/register', (req, res) => {
-  const id = 'u' + Math.floor(Math.random() *1000) + 1;
+  const id = 'u' + Math.floor(Math.random() * 1000) + 1;
   const email = req.body.email;
   const password = req.body.password;
   
@@ -63,7 +63,7 @@ app.post('/register', (req, res) => {
   
   const user = emailLookup(email);
   console.log(user);
-  if(user) {
+  if (user) {
     return res.status(400).send('Email already exists');
   }
   
@@ -72,19 +72,22 @@ app.post('/register', (req, res) => {
   res.redirect('/urls');
 });
 
+
 // main tinyApp
 app.get('/urls', (req, res) => {
   const templateVars = {
-    user: req.cookies['user_id'],
+    user: users[req.cookies['user_id']],
     urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
+
 // create new shortURL
 app.get('/urls/new', (req, res) => {
-  const templateVars = { user: req.cookies['user_id'] };
+  const templateVars = { user: users[req.cookies['user_id']] };
   res.render('urls_new', templateVars);
 });
+
 
 // generates shortURL
 app.post('/urls', (req, res) => {
@@ -93,10 +96,11 @@ app.post('/urls', (req, res) => {
   res.redirect(`urls/${shortURL}`);
 });
 
+
 // shows the url details
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
-    user: req.cookies['user_id'],
+    user: users[req.cookies['user_id']],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -106,6 +110,7 @@ app.get('/urls/:shortURL', (req, res) => {
   }
   res.render('urls_show', templateVars);
 });
+
 
 // single shortURL view
 app.get('/u/:shortURL', (req, res) => {
@@ -127,6 +132,7 @@ app.post('/urls/:shortURL/update', (req, res) => {
   urlDatabase[req.params.shortURL] = req.body.longURL;
   res.redirect('/urls');
 });
+
 
 // Login and Logout route
 app.post('/login', (req, res) => {
