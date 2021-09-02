@@ -30,7 +30,21 @@ const users = {
 
 
 // Random variables
-const shortURL = Math.random().toString(36).substr(2, 6);
+const generateRandomString = () => {
+  return Math.random().toString(36).substr(2, 6);
+};
+
+// lookup user
+const emailLookup = (email) => {
+  for (const id in users) {
+    const user = users[id];
+    if (user.email === email) {
+      return user;
+    }
+  }
+  return null;
+};
+console.log(users);
 
 
 // REGISTER route
@@ -42,8 +56,18 @@ app.post('/register', (req, res) => {
   const id = 'u' + Math.floor(Math.random() *1000) + 1;
   const email = req.body.email;
   const password = req.body.password;
+  
+  if (!email || !password) {
+    return res.status(400).send('Email or password cannot be blank');
+  }
+  
+  const user = emailLookup(email);
+  console.log(user);
+  if(user) {
+    return res.status(400).send('Email already exists');
+  }
+  
   users[id] = { id, email, password };
-
   res.cookie('user_id', id);
   res.redirect('/urls');
 });
@@ -51,19 +75,20 @@ app.post('/register', (req, res) => {
 // main tinyApp
 app.get('/urls', (req, res) => {
   const templateVars = {
-    user: users[req.cookies['user_id']],
+    user: req.cookies['user_id'],
     urls: urlDatabase };
   res.render('urls_index', templateVars);
 });
 
 // create new shortURL
 app.get('/urls/new', (req, res) => {
-  const templateVars = { username: req.cookies['username'] };
+  const templateVars = { user: req.cookies['user_id'] };
   res.render('urls_new', templateVars);
 });
 
 // generates shortURL
 app.post('/urls', (req, res) => {
+  const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`urls/${shortURL}`);
 });
@@ -71,7 +96,7 @@ app.post('/urls', (req, res) => {
 // shows the url details
 app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
-    user: users.req.cookies['user_id'],
+    user: req.cookies['user_id'],
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
@@ -112,7 +137,7 @@ app.post('/login', (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id', req.body.id);
-  res.redirect('/urls');
+  res.redirect('/register');
 });
 
 app.listen(PORT, () => {
