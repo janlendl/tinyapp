@@ -11,8 +11,8 @@ app.use(cookieParser());
 
 // Sample Database and User data
 const urlDatabase = {
-  'b2xVn2': 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://google.com'
+  'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', userID: 'u0001' },
+  '9sm5xK': { longURL: 'http://google.com', userID: 'u0002' }
 };
 
 const users = {
@@ -82,7 +82,9 @@ app.post('/register', (req, res) => {
 app.get('/urls', (req, res) => {
   const templateVars = {
     user: users[req.cookies['user_id']],
-    urls: urlDatabase };
+    urls: urlDatabase 
+  };
+  console.log(urlDatabase);
   res.render('urls_index', templateVars);
 });
 
@@ -101,7 +103,9 @@ app.get('/urls/new', (req, res) => {
 // generates shortURL
 app.post('/urls', (req, res) => {
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  const longURL = req.body.longURL;
+  const userID = req.cookies['user_id'];
+  urlDatabase[shortURL] = { longURL, userID};
   res.redirect(`urls/${shortURL}`);
 });
 
@@ -111,7 +115,7 @@ app.get('/urls/:shortURL', (req, res) => {
   const templateVars = {
     user: users[req.cookies['user_id']],
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: urlDatabase[req.params.shortURL].longURL
   };
 
   if (!urlDatabase[req.params.shortURL]) {
@@ -123,7 +127,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
 // single shortURL view
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   if (!urlDatabase[req.params.shortURL]) {
     return res.send('Error! Please check the shortened URL');
   }
@@ -138,7 +142,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 // EDIT longURL feature
 app.post('/urls/:shortURL/update', (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.longURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
   res.redirect('/urls');
 });
 
