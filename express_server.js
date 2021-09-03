@@ -102,47 +102,47 @@ app.get('/urls/new', (req, res) => {
 
 // generates shortURL
 app.post('/urls', (req, res) => {
-  const shortURL = generateRandomString();
+  const urlID = generateRandomString();
   const longURL = req.body.longURL;
   const userID = req.cookies['user_id'];
-  urlDatabase[shortURL] = { longURL, userID};
-  res.redirect(`urls/${shortURL}`);
+  urlDatabase[urlID] = { longURL, userID};
+  res.redirect(`urls/${urlID}`);
 });
 
 
 // shows the url details
-app.get('/urls/:shortURL', (req, res) => {
+app.get('/urls/:urlID', (req, res) => {
   const templateVars = {
     user: users[req.cookies['user_id']],
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL
+    urlID: req.params.urlID,
+    longURL: urlDatabase[req.params.urlID].longURL
   };
 
-  if (!urlDatabase[req.params.shortURL]) {
+  if (!urlDatabase[req.params.urlID]) {
     return res.send('Error! Please check the shortened URL');
   }
   res.render('urls_show', templateVars);
 });
 
 
-// single shortURL view
-app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  if (!urlDatabase[req.params.shortURL]) {
+// single urlID view
+app.get('/u/:urlID', (req, res) => {
+  const longURL = urlDatabase[req.params.urlID].longURL;
+  if (!urlDatabase[req.params.urlID]) {
     return res.send('Error! Please check the shortened URL');
   }
   res.redirect(longURL);
 });
 
 // DELETE feature
-app.post('/urls/:shortURL/delete', (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+app.post('/urls/:urlID/delete', (req, res) => {
+  delete urlDatabase[req.params.urlID];
   res.redirect('/urls');
 });
 
 // EDIT longURL feature
-app.post('/urls/:shortURL/update', (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+app.post('/urls/:urlID/update', (req, res) => {
+  urlDatabase[req.params.urlID].longURL = req.body.longURL;
   res.redirect('/urls');
 });
 
