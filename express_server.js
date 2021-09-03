@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 3000;
 
@@ -19,12 +20,12 @@ const users = {
   "u0001": {
     id: "u0001",
     email: "jan@hotmail.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
   },
   "u0002": {
     id: "u0002",
     email: "lendl@mail.com",
-    password: "myPasswordisStrong"
+    password: bcrypt.hashSync("myPasswordisStrong", 10)
   }
 };
 
@@ -57,7 +58,7 @@ const urlsForUser = (id) => {
   return templateVars;
 };
 
-
+// Login Page
 app.get('/login', (req, res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
   res.render('urls_login', templateVars);
@@ -73,7 +74,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const id = 'u' + Math.floor(Math.random() * 1000) + 1;
   const email = req.body.email;
-  const password = req.body.password;
+  const password = bcrypt.hashSync(req.body.password, 10);
   
   if (!email || !password) {
     return res.status(400).send('Email or password cannot be blank');
@@ -192,7 +193,8 @@ app.post('/login', (req, res) => {
   if (!user) {
     return res.status(403).send('Account doesn\'t exists');
   }
-  if (user.password !== password) {
+  // if (user.password !== password) {
+  if (!bcrypt.compareSync(password,user.password)) {
     return res.status(403).send('Invalid Password!');
   }
   res.cookie('user_id', user.id);
