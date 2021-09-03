@@ -137,6 +137,12 @@ app.get('/urls/:urlID', (req, res) => {
     longURL: urlDatabase[req.params.urlID].longURL
   };
 
+  if (!templateVars.user) {
+    return res.status(400).send('You are not logged in. Please login or register');
+  }
+  if (req.cookies['user_id'] !== urlDatabase[req.params.urlID].userID) {
+    return res.status(403).send('You are not authorized to view the shortened URL');
+  }
   if (!urlDatabase[req.params.urlID]) {
     return res.send('Error! Please check the shortened URL');
   }
@@ -144,7 +150,7 @@ app.get('/urls/:urlID', (req, res) => {
 });
 
 
-// single urlID view
+// Redirect to long URL
 app.get('/u/:urlID', (req, res) => {
   const longURL = urlDatabase[req.params.urlID].longURL;
   if (!urlDatabase[req.params.urlID]) {
@@ -155,12 +161,18 @@ app.get('/u/:urlID', (req, res) => {
 
 // DELETE feature
 app.post('/urls/:urlID/delete', (req, res) => {
+  if(req.cookies['user_id'] !== urlDatabase[req.params.urlID].userID) {
+    res.status(403).send('You are not authorized to update the URL!');
+  }
   delete urlDatabase[req.params.urlID];
   res.redirect('/urls');
 });
 
 // EDIT longURL feature
 app.post('/urls/:urlID/update', (req, res) => {
+  if(req.cookies['user_id'] !== urlDatabase[req.params.urlID].userID) {
+    res.status(403).send('You are not authorized to update the URL!');
+  }
   urlDatabase[req.params.urlID].longURL = req.body.longURL;
   res.redirect('/urls');
 });
