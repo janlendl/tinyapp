@@ -45,6 +45,19 @@ const emailLookup = (email) => {
   return null;
 };
 
+
+// lookup URL for a certain user
+const urlsForUser = (id) => {
+  let templateVars = { };
+  for (const keys in urlDatabase) {
+    if (urlDatabase[keys].userID === id) {
+      templateVars[keys] = urlDatabase[keys];
+    }
+  }
+  return templateVars;
+};
+
+
 app.get('/login', (req, res) => {
   const templateVars = { user: users[req.cookies['user_id']] };
   res.render('urls_login', templateVars);
@@ -82,9 +95,13 @@ app.post('/register', (req, res) => {
 app.get('/urls', (req, res) => {
   const templateVars = {
     user: users[req.cookies['user_id']],
-    urls: urlDatabase 
+    urls: urlsForUser(req.cookies['user_id'])
   };
-  console.log(urlDatabase);
+
+  //check if user is logged in first
+  if (!templateVars.user) {
+    return res.send('You are not logged in. Please login or register');
+  }
   res.render('urls_index', templateVars);
 });
 
@@ -102,10 +119,12 @@ app.get('/urls/new', (req, res) => {
 
 // generates shortURL
 app.post('/urls', (req, res) => {
-  const urlID = generateRandomString();
-  const longURL = req.body.longURL;
-  const userID = req.cookies['user_id'];
-  urlDatabase[urlID] = { longURL, userID};
+  const urlID = generateRandomString(),
+    longURL = req.body.longURL,
+    userID = req.cookies['user_id'];
+
+  urlDatabase[urlID] = { longURL, userID };
+
   res.redirect(`urls/${urlID}`);
 });
 
@@ -149,8 +168,8 @@ app.post('/urls/:urlID/update', (req, res) => {
 
 // Login and Logout route
 app.post('/login', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const email = req.body.email,
+    password = req.body.password;
   
   if (!email || !password) {
     return res.status(403).send('Email or password cannot be blank');
