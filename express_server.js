@@ -5,16 +5,16 @@ const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 3000;
-const cooKey = 'doremi1234567890fasolatido'
+const cooKey = 'doremi1234567890fasolatido';
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 // initiate cookiesession
-app.use(cookieSession ({
-  name: 'session', 
-  keys: [cooKey], 
+app.use(cookieSession({
+  name: 'session',
+  keys: [cooKey],
 
   // Cookie options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
@@ -72,13 +72,13 @@ const urlsForUser = (id) => {
 
 // Login Page
 app.get('/login', (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']] };
+  const templateVars = { user: users[req.session.username] };
   res.render('urls_login', templateVars);
 });
 
 // Route to register page
 app.get('/register', (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']] };
+  const templateVars = { user: users[req.session.username] };
   res.render('urls_register', templateVars);
 });
 
@@ -99,8 +99,7 @@ app.post('/register', (req, res) => {
   }
   
   users[id] = { id, email, password };
-  // res.cookie('user_id', id);
-  req.session.user_id = id;
+  req.session.username = id;
   res.redirect('/urls');
 });
 
@@ -108,8 +107,8 @@ app.post('/register', (req, res) => {
 // main tinyApp
 app.get('/urls', (req, res) => {
   const templateVars = {
-    user: users[req.session.user_id],
-    urls: urlsForUser(req.session.user_id)
+    user: users[req.session.username],
+    urls: urlsForUser(req.session.username)
   };
 
   //check if user is logged in first
@@ -122,9 +121,9 @@ app.get('/urls', (req, res) => {
 
 // create new shortURL
 app.get('/urls/new', (req, res) => {
-  const templateVars = { user: users[req.cookies['user_id']] };
+  const templateVars = { user: users[req.session.username] };
   
-  if (!req.cookies['user_id']) {
+  if (!req.session.username) {
     return res.redirect('/login');
   }
   res.render('urls_new', templateVars);
@@ -135,7 +134,7 @@ app.get('/urls/new', (req, res) => {
 app.post('/urls', (req, res) => {
   const urlID = generateRandomString(),
     longURL = req.body.longURL,
-    userID = req.cookies['user_id'];
+    userID = req.session.username;
 
   urlDatabase[urlID] = { longURL, userID };
 
@@ -146,7 +145,7 @@ app.post('/urls', (req, res) => {
 // shows the url details
 app.get('/urls/:urlID', (req, res) => {
   const templateVars = {
-    user: users[req.cookies['user_id']],
+    user: users[req.session.username],
     urlID: req.params.urlID,
     longURL: urlDatabase[req.params.urlID].longURL
   };
@@ -154,7 +153,7 @@ app.get('/urls/:urlID', (req, res) => {
   if (!templateVars.user) {
     return res.status(400).send('You are not logged in. Please login or register');
   }
-  if (req.cookies['user_id'] !== urlDatabase[req.params.urlID].userID) {
+  if (req.session.username !== urlDatabase[req.params.urlID].userID) {
     return res.status(403).send('You are not authorized to view the shortened URL');
   }
   if (!urlDatabase[req.params.urlID]) {
@@ -175,7 +174,7 @@ app.get('/u/:urlID', (req, res) => {
 
 // DELETE feature
 app.post('/urls/:urlID/delete', (req, res) => {
-  if(req.cookies['user_id'] !== urlDatabase[req.params.urlID].userID) {
+  if (req.session.username !== urlDatabase[req.params.urlID].userID) {
     res.status(403).send('You are not authorized to update the URL!');
   }
   delete urlDatabase[req.params.urlID];
@@ -184,7 +183,7 @@ app.post('/urls/:urlID/delete', (req, res) => {
 
 // EDIT longURL feature
 app.post('/urls/:urlID/update', (req, res) => {
-  if(req.cookies['user_id'] !== urlDatabase[req.params.urlID].userID) {
+  if (req.session.username !== urlDatabase[req.params.urlID].userID) {
     res.status(403).send('You are not authorized to update the URL!');
   }
   urlDatabase[req.params.urlID].longURL = req.body.longURL;
@@ -210,13 +209,12 @@ app.post('/login', (req, res) => {
   if (!bcrypt.compareSync(password,user.password)) {
     return res.status(403).send('Invalid Password!');
   }
-  req.session.user_id = user.id;
+  req.session.username = user.id;
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
   req.session = null;
-  // res.clearCookie('user_id', req.body.id);
   res.redirect('/login');
 });
 
