@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const { getUSerByEmail, urlsForUser } = require('./helper');
 const app = express();
 const PORT = 3000;
 const cooKey = 'doremi1234567890fasolatido';
@@ -48,28 +49,28 @@ const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
 
-// lookup user
-const emailLookup = (email) => {
-  for (const id in users) {
-    const user = users[id];
-    if (user.email === email) {
-      return user;
-    }
-  }
-  return null;
-};
+// getUSerByEmail helper
+// const getUSerByEmail = (email, users) => {
+//   for (const id in users) {
+//     const user = users[id];
+//     if (user.email === email) {
+//       return user;
+//     }
+//   }
+//   return null;
+// };
 
 
 // lookup URL for a certain user
-const urlsForUser = (id) => {
-  let templateVars = { };
-  for (const keys in urlDatabase) {
-    if (urlDatabase[keys].userID === id) {
-      templateVars[keys] = urlDatabase[keys];
-    }
-  }
-  return templateVars;
-};
+// const urlsForUser = (id, urlDatabase) => {
+//   let templateVars = { };
+//   for (const keys in urlDatabase) {
+//     if (urlDatabase[keys].userID === id) {
+//       templateVars[keys] = urlDatabase[keys];
+//     }
+//   }
+//   return templateVars;
+// };
 
 // Login Page
 app.get('/login', (req, res) => {
@@ -93,7 +94,7 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Email or password cannot be blank');
   }
   
-  const user = emailLookup(email);
+  const user = getUSerByEmail(email, users);
 
   if (user) {
     return res.status(400).send('Email already exists');
@@ -109,7 +110,7 @@ app.post('/register', (req, res) => {
 app.get('/urls', (req, res) => {
   const templateVars = {
     user: users[req.session.username],
-    urls: urlsForUser(req.session.username)
+    urls: urlsForUser(req.session.username, urlDatabase)
   };
 
   //check if user is logged in first
@@ -201,7 +202,7 @@ app.post('/login', (req, res) => {
     return res.status(403).send('Email or password cannot be blank');
   }
   
-  const user = emailLookup(email);
+  const user = getUSerByEmail(email, users);
 
   if (!user) {
     return res.status(403).send('Account doesn\'t exists');
