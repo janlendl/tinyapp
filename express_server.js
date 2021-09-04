@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 3000;
 const cooKey = 'doremi1234567890fasolatido';
+const saltRounds = 10;
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
@@ -32,12 +33,12 @@ const users = {
   "u0001": {
     id: "u0001",
     email: "jan@hotmail.com",
-    password: bcrypt.hashSync("purple-monkey-dinosaur", 10)
+    password: bcrypt.hashSync("purple-monkey-dinosaur", saltRounds)
   },
   "u0002": {
     id: "u0002",
     email: "lendl@mail.com",
-    password: bcrypt.hashSync("myPasswordisStrong", 10)
+    password: bcrypt.hashSync("myPasswordisStrong", saltRounds)
   }
 };
 
@@ -86,7 +87,7 @@ app.get('/register', (req, res) => {
 app.post('/register', (req, res) => {
   const id = 'u' + Math.floor(Math.random() * 1000) + 1;
   const email = req.body.email;
-  const password = bcrypt.hashSync(req.body.password, 10);
+  const password = bcrypt.hashSync(req.body.password, saltRounds);
   
   if (!email || !password) {
     return res.status(400).send('Email or password cannot be blank');
@@ -205,7 +206,6 @@ app.post('/login', (req, res) => {
   if (!user) {
     return res.status(403).send('Account doesn\'t exists');
   }
-  // if (user.password !== password) {
   if (!bcrypt.compareSync(password,user.password)) {
     return res.status(403).send('Invalid Password!');
   }
