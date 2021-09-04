@@ -1,13 +1,25 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const app = express();
 const PORT = 3000;
+const cooKey = 'doremi1234567890fasolatido'
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+
+// initiate cookiesession
+app.use(cookieSession ({
+  name: 'session', 
+  keys: [cooKey], 
+
+  // Cookie options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
+
 
 
 // Sample Database and User data
@@ -87,7 +99,8 @@ app.post('/register', (req, res) => {
   }
   
   users[id] = { id, email, password };
-  res.cookie('user_id', id);
+  // res.cookie('user_id', id);
+  req.session.user_id = id;
   res.redirect('/urls');
 });
 
@@ -95,8 +108,8 @@ app.post('/register', (req, res) => {
 // main tinyApp
 app.get('/urls', (req, res) => {
   const templateVars = {
-    user: users[req.cookies['user_id']],
-    urls: urlsForUser(req.cookies['user_id'])
+    user: users[req.session.user_id],
+    urls: urlsForUser(req.session.user_id)
   };
 
   //check if user is logged in first
@@ -197,12 +210,13 @@ app.post('/login', (req, res) => {
   if (!bcrypt.compareSync(password,user.password)) {
     return res.status(403).send('Invalid Password!');
   }
-  res.cookie('user_id', user.id);
+  req.session.user_id = user.id;
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id', req.body.id);
+  req.session = null;
+  // res.clearCookie('user_id', req.body.id);
   res.redirect('/login');
 });
 
