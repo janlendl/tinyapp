@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
-const { getUSerByEmail, urlsForUser } = require('./helpers');
+const { getUserByEmail, urlsForUser } = require('./helpers');
 const app = express();
 const PORT = 3000;
 const cooKey = 'doremi1234567890fasolatido';
@@ -72,7 +72,7 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Email or password cannot be blank');
   }
   
-  const user = getUSerByEmail(email, users);
+  const user = getUserByEmail(email, users);
 
   if (user) {
     return res.status(400).send('Email already exists');
@@ -180,7 +180,7 @@ app.post('/login', (req, res) => {
     return res.status(403).send('Email or password cannot be blank');
   }
   
-  const user = getUSerByEmail(email, users);
+  const user = getUserByEmail(email, users);
 
   if (!user) {
     return res.status(403).send('Account doesn\'t exists');
