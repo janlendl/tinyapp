@@ -1,7 +1,7 @@
 {
   "name": "tinyapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "URL shortening project. Converts a long URL to a short URL.",
   "main": "express_server.js",
   "scripts": {
     "start": "./node_modules/.bin/nodemon -L express.js",
@@ -11,8 +11,8 @@
     "type": "git",
     "url": "git+https://github.com/janlendl/tinyapp.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["tiny app", "tinyApp", "Make the URL short", "Lighthouse Labs"],
+  "author": "Jan Lendl Peralta",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/janlendl/tinyapp/issues"
