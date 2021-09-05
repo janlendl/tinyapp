@@ -25,7 +25,6 @@ app.use(cookieSession({
 }));
 
 
-
 // Sample Database and User data
 const urlDatabase = {
   'b2xVn2': { longURL: 'http://www.lighthouselabs.ca', userID: 'u0001' },
@@ -45,8 +44,6 @@ const users = {
   }
 };
 
-
-// Random variables
 const generateRandomString = () => {
   return Math.random().toString(36).substr(2, 6);
 };
@@ -87,6 +84,11 @@ app.post('/register', (req, res) => {
 
 
 // main tinyApp
+
+app.get('/', (req, res) => {
+  res.redirect('/login');
+});
+
 app.get('/urls', (req, res) => {
   const templateVars = {
     user: users[req.session.username],
