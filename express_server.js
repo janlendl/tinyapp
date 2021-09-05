@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const { getUserByEmail, urlsForUser } = require('./helpers');
 const app = express();
@@ -12,6 +13,7 @@ const saltRounds = 10;
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'images')))
 
 // initiate cookiesession
 app.use(cookieSession({
