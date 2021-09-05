@@ -149,10 +149,10 @@ app.get('/urls/:urlID', (req, res) => {
 
 // Redirect to long URL
 app.get('/u/:urlID', (req, res) => {
-  const longURL = urlDatabase[req.params.urlID].longURL;
   if (!urlDatabase[req.params.urlID]) {
     return res.send('Error! Please check the shortened URL');
   }
+  const longURL = urlDatabase[req.params.urlID].longURL;
   res.redirect(longURL);
 });
 
