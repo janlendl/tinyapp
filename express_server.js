@@ -13,7 +13,7 @@ const saltRounds = 10;
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'images')))
+app.use(express.static(path.join(__dirname, 'images')));
 
 // initiate cookiesession
 app.use(cookieSession({
